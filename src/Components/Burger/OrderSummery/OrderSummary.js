@@ -16,7 +16,7 @@ export default function OrderSummary({
     );
   });
   useEffect(() => {
-    console.log("[Order Summary] Update")
+    // console.log("[Order Summary] Update")
   }, [ingredientSummary]);
 
   return (

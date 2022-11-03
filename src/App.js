@@ -8,23 +8,23 @@ import { Route, Routes } from "react-router-dom";
 import ContactData from "./Components/Checkout/ContactData/ContactData";
 import Orders from "./Components/Orders/Orders";
 
-function App({}) {
+function App() {
   return (
     <>
-  
-        {/* <Routes>
+      {/* <Routes>
           {RouteList.map((el) => {
             return (
               <Route exact path={el.path} element={el.component} key={el.name} />
             );
           })}
         </Routes> */}
-      <Layout> 
+      <Layout>
         <Routes>
           <Route path="/checkout" element={<Checkout />}>
-            <Route path="contact-data" exact element={<ContactData/>} />
+            <Route path="contact-data" element={<ContactData />} />
           </Route>
-          <Route path="/orders" element={<Orders />} />
+
+          <Route path="orders" element={<Orders />} />
           <Route path="/" element={<BurgerBuilder />} />
         </Routes>
       </Layout>

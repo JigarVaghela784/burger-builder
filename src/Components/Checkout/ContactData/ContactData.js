@@ -1,15 +1,13 @@
 import React, { useState } from "react";
 import Button from "../../UI/Button/Button";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import Spinner from "../../UI/Spinner/Spinner";
 import axios from "../../../axios-Order";
 import style from "./ContactData.module.css";
 import Input from "../../Form/Input";
-const ContactData = () => {
-  const { ingredients } = useOutletContext();
-  // console.log("inside contactData", useOutletContext().ingredients);
-  const contactDataIngredients = useOutletContext().ingredients;
-  const contactDataIngredientsPrice = useOutletContext().price;
+import { connect } from "react-redux";
+const ContactData = ({ingredients,price}) => {
+
   const [contactData, setContactData] = useState({
     orderForm: {
       name: {
@@ -99,17 +97,15 @@ const ContactData = () => {
 
   const orderHandler = (event) => {
     event.preventDefault();
-    console.log("IngredientsContactData", contactDataIngredients);
-    console.log("IngredientsContactDataPrice", contactDataIngredientsPrice);
-    const ingredients = {};
-    const price = 0;
+    // const ingredients = {};
+    // const price = 0;
     const formData = {};
     for (let id in contactData.orderForm) {
       formData[id] = contactData.orderForm[id].value;
     }
     const order = {
-      ingredient: contactDataIngredients,
-      price: contactDataIngredientsPrice,
+      ingredient: ingredients,
+      price: price,
       orderData: formData,
     };
     setContactData({ loading: true });
@@ -174,7 +170,6 @@ const ContactData = () => {
 
   let form = (
     <form onSubmit={orderHandler}>
-      {/* <Input elementType='...' elementConfig='...' value='...' /> */}
       {formInputData.map((formEl) => (
         <Input
           key={formEl.id}
@@ -201,5 +196,10 @@ const ContactData = () => {
     </div>
   );
 };
-
-export default ContactData;
+const mapStateToProps = (state) => {
+  return {
+    ingredients: state.ingredients,
+    price: state.totalPrice,
+  };
+};
+export default connect(mapStateToProps)( ContactData);

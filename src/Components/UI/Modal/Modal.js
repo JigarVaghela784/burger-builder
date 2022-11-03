@@ -1,4 +1,5 @@
-import React,{useEffect} from "react";
+// import React,{useEffect} from "react";
+import React from "react";
 import style from "./Modal.module.css";
 // import OrderSummary from "../../Burger/OrderSummery/OrderSummary";
 import BackDrop from "../BackDrop/BackDrop";
