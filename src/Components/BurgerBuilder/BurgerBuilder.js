@@ -8,27 +8,34 @@ import Spinner from "../UI/Spinner/Spinner";
 import axios from "../../axios-Order";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
-import * as actionType from "../../Store/Action";
+import * as burgerBuilderAction from "../../store/action/index";
 
-function BurgerBuilder({ingredients,price,onAddIngredient,onRemoveIngredient}) {
+function BurgerBuilder({
+  ingredients,
+  price,
+  error,
+  onAddIngredient,
+  onRemoveIngredient,
+  onInitIngredient,
+}) {
   const [ingredient, setIngredient] = useState({
     purchasable: false,
     purchasing: false,
     loading: false,
-    error: false,
+    // error: false,
   });
   const navigate = useNavigate();
 
-  const [error, setError] = useState({ error: null });
+  const [errors, setErrors] = useState({ errors: null });
   useEffect(() => {
     const reqInterceptors = axios.interceptors.request.use((req) => {
-      setError({ error: null });
+      setErrors({ errors: null });
       return req;
     });
     const resInterceptors = axios.interceptors.response.use(
       (response) => response,
       (error) => {
-        setError({ error: error });
+        setErrors({ errors: error });
         console.log("error@@@", error);
       }
     );
@@ -39,18 +46,8 @@ function BurgerBuilder({ingredients,price,onAddIngredient,onRemoveIngredient}) {
   }, []);
 
   useEffect(() => {
-    // axios
-    //   .get(
-    //     "https://my-burger-app-59a08-default-rtdb.firebaseio.com/ingredients.json"
-    //   )
-    //   .then((response) => {
-    //     setIngredient({ ...ingredient, ingredients: response.data });
-    //     // console.log(response.data, "response");
-    //   })
-    //   .catch((error) => {
-    //     setIngredient({ error: true });
-    //   });
-  }, [ingredient]);
+    onInitIngredient();
+  },[onInitIngredient]);
 
   const updatedPurchaseState = (ingredients, updatedPrice) => {
     const sum = Object.keys(ingredients)
@@ -62,7 +59,6 @@ function BurgerBuilder({ingredients,price,onAddIngredient,onRemoveIngredient}) {
       }, 0);
     return sum > 0 ? true : false;
   };
- 
 
   const purchaseHandler = () => {
     setIngredient({
@@ -77,7 +73,7 @@ function BurgerBuilder({ingredients,price,onAddIngredient,onRemoveIngredient}) {
     });
   };
   const purchaseContinueHandler = () => {
-    navigate({  
+    navigate({
       pathname: "/checkout",
     });
   };
@@ -89,7 +85,7 @@ function BurgerBuilder({ingredients,price,onAddIngredient,onRemoveIngredient}) {
   }
 
   let orderSummary = null;
-  let burger = ingredient.error ? <p>Ingredients Can't Load!</p> : <Spinner />;
+  let burger = errors ? <p>Ingredients Can't Load!</p> : <Spinner />;
 
   if (ingredients) {
     burger = (
@@ -114,12 +110,13 @@ function BurgerBuilder({ingredients,price,onAddIngredient,onRemoveIngredient}) {
       />
     );
   }
-  if (ingredient.loading) {
-    orderSummary = <Spinner />;
-  }
+  // if (ingredient.loading) {
+  //   orderSummary = <Spinner />;
+  // }
 
   const errorHandler = () => {
-    setError({ error: null });
+      // setErrors({errors:null})
+      return error
   };
   return (
     <>
@@ -138,19 +135,17 @@ const mapStateToProps = (state) => {
   return {
     ingredients: state.ingredients,
     price: state.totalPrice,
+    error: state.error,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
     onAddIngredient: (ingsName) =>
-      dispatch({ 
-        type: actionType.ADD_INGREDIENT,
-         ingredientName: ingsName }),
+      dispatch( burgerBuilderAction.addIngredients(ingsName)),
     onRemoveIngredient: (ingsName) =>
-      dispatch({
-        type: actionType.REMOVE_INGREDIENT,
-        ingredientName: ingsName,
-      }),
+      dispatch(burgerBuilderAction.removeIngredients(ingsName)),
+    onInitIngredient: () =>
+      dispatch(burgerBuilderAction.initIngredient() ),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(BurgerBuilder);
