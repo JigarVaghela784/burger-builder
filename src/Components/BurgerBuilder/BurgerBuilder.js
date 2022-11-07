@@ -8,7 +8,7 @@ import Spinner from "../UI/Spinner/Spinner";
 import axios from "../../axios-Order";
 import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
-import * as burgerBuilderAction from "../../store/action/index";
+import * as actions from "../../store/action/index";
 
 function BurgerBuilder({
   ingredients,
@@ -17,6 +17,7 @@ function BurgerBuilder({
   onAddIngredient,
   onRemoveIngredient,
   onInitIngredient,
+  onPurchaseInit
 }) {
   const [ingredient, setIngredient] = useState({
     purchasable: false,
@@ -73,6 +74,7 @@ function BurgerBuilder({
     });
   };
   const purchaseContinueHandler = () => {
+    onPurchaseInit()
     navigate({
       pathname: "/checkout",
     });
@@ -115,7 +117,7 @@ function BurgerBuilder({
   // }
 
   const errorHandler = () => {
-      // setErrors({errors:null})
+      // setErrors({error:null})
       return error
   };
   return (
@@ -133,19 +135,20 @@ function BurgerBuilder({
 }
 const mapStateToProps = (state) => {
   return {
-    ingredients: state.ingredients,
-    price: state.totalPrice,
-    error: state.error,
+    ingredients: state.burgerBuilder.ingredients,
+    price: state.burgerBuilder.totalPrice,
+    error: state.burgerBuilder.error,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
     onAddIngredient: (ingsName) =>
-      dispatch( burgerBuilderAction.addIngredients(ingsName)),
+      dispatch( actions.addIngredients(ingsName)),
     onRemoveIngredient: (ingsName) =>
-      dispatch(burgerBuilderAction.removeIngredients(ingsName)),
+      dispatch(actions.removeIngredients(ingsName)),
     onInitIngredient: () =>
-      dispatch(burgerBuilderAction.initIngredient() ),
+      dispatch(actions.initIngredient() ),
+    onPurchaseInit:()=>dispatch(actions.purchaseInit())
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(BurgerBuilder);

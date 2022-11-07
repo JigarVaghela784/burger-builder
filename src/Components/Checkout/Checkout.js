@@ -1,11 +1,10 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import {  useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import CheckoutSummary from "../Order/CheckoutSummary/CheckoutSummary";
 import ContactData from "./ContactData/ContactData";
 
-const Checkout = ({ ings }) => {
-  
+const Checkout = ({ ings, purchased }) => {
   const location = useLocation();
   const navigate = useNavigate();
   // useEffect(() => {
@@ -29,20 +28,31 @@ const Checkout = ({ ings }) => {
   const checkoutContinuedHandler = () => {
     navigate("contact-data");
   };
-  return (
-    <>
-      <CheckoutSummary
-        ingredients={ings}
-        checkoutCancelled={checkoutCancelledHandler}
-        checkoutContinued={checkoutContinuedHandler}
-      />
-      {location.pathname === "/checkout/contact-data" && <ContactData />}
-    </>
-  );
+      ////WithError handler reaming to add 
+
+  let summary = <Navigate to="/" />;
+  console.log('purchased', purchased)
+  if (ings) {
+    const purchasedInit = purchased ? <Navigate to="/" /> : null;
+    console.log("ings", ings);
+    summary = (
+      <>
+        {purchasedInit}
+        <CheckoutSummary
+          ingredients={ings}
+          checkoutCancelled={checkoutCancelledHandler}
+          checkoutContinued={checkoutContinuedHandler}
+        />
+        {location.pathname === "/checkout/contact-data" && <ContactData />}
+      </>
+    );
+  }
+  return summary;
 };
 const mapStateToProps = (state) => {
   return {
-    ings: state.ingredients,
+    ings: state.burgerBuilder.ingredients,
+    purchased: state.order.purchased,
   };
 };
 export default connect(mapStateToProps)(Checkout);
