@@ -6,6 +6,7 @@ export default function NavigationItems() {
     <ul className={style.NavigationItem}>
         <NavigationItem link="/">Burger Builder</NavigationItem>
         <NavigationItem link="/orders">Orders</NavigationItem>
+        <NavigationItem link="/auth">Authentication</NavigationItem>
     </ul>
   )
 }
