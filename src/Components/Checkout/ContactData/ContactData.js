@@ -1,13 +1,21 @@
 import React, { useState } from "react";
 import Button from "../../UI/Button/Button";
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Spinner from "../../UI/Spinner/Spinner";
 import axios from "../../../axios-Order";
 import style from "./ContactData.module.css";
 import Input from "../../Form/Input";
 import { connect } from "react-redux";
-const ContactData = ({ingredients,price}) => {
-
+import * as actions from "../../../store/action/index";
+import WithErrorHandler from "../../UI/hoc/WithErrorHandler/WithErrorHandler";
+const ContactData = ({
+  ingredients,
+  price,
+  onBurgerPurchase,
+  loading,
+  error,
+  token,
+}) => {
   const [contactData, setContactData] = useState({
     orderForm: {
       name: {
@@ -21,7 +29,7 @@ const ContactData = ({ingredients,price}) => {
           require: true,
         },
         valid: false,
-        focused:false
+        focused: false,
       },
       email: {
         elementType: "input",
@@ -32,9 +40,10 @@ const ContactData = ({ingredients,price}) => {
         value: "",
         validation: {
           require: true,
+          isEmail: true,
         },
         valid: false,
-        focused:false
+        focused: false,
       },
       street: {
         elementType: "input",
@@ -47,7 +56,7 @@ const ContactData = ({ingredients,price}) => {
           require: true,
         },
         valid: false,
-        focused:false
+        focused: false,
       },
       zipCode: {
         elementType: "input",
@@ -58,11 +67,12 @@ const ContactData = ({ingredients,price}) => {
         value: "",
         validation: {
           require: true,
-          minLength:6,
-          maxLength:6,
+          minLength: 6,
+          maxLength: 6,
+          isNumeric: true,
         },
         valid: false,
-        focused:false
+        focused: false,
       },
       country: {
         elementType: "input",
@@ -75,7 +85,7 @@ const ContactData = ({ingredients,price}) => {
           require: true,
         },
         valid: false,
-        focused:false
+        focused: false,
       },
       deliveryMethod: {
         elementType: "select",
@@ -85,13 +95,13 @@ const ContactData = ({ingredients,price}) => {
             { value: "fastest", displayValue: "Fastest" },
           ],
         },
-        value: "",
-        validation:{},
-        valid:true,
+        value: "normal",
+        validation: {},
+        valid: true,
       },
     },
-    formIsValid:false,
-    loading: false,
+    formIsValid: false,
+    // loading: false,
   });
   const navigate = useNavigate();
 
@@ -108,56 +118,50 @@ const ContactData = ({ingredients,price}) => {
       price: price,
       orderData: formData,
     };
-    setContactData({ loading: true });
-    axios
-
-      .post("/orders.json", order)
-      .then((response) => {
-        setContactData({ loading: false });
-        navigate("/");
-      })
-      .catch((error) => {
-        // console.log("error!!!", error);
-        setContactData({ loading: false });
-      });
+    onBurgerPurchase(order, token);
   };
-
-  const validationHandler=(value,rules)=>{
-    let isValid=true;
-    if(!rules){
+  const validationHandler = (value, rules) => {
+    let isValid = true;
+    if (!rules) {
       return true;
     }
-    if(rules.require){
-      isValid=value.trim()!==''&&isValid;
+    if (rules.require) {
+      isValid = value.trim() !== "" && isValid;
     }
-    if(rules.minLength){
-      isValid=value.length >=rules.minLength&&isValid;
+    if (rules.minLength) {
+      isValid = value.length >= rules.minLength && isValid;
     }
-     if(rules.maxLength){
-      isValid=value.length <=rules.maxLength&&isValid;
+    if (rules.maxLength) {
+      isValid = value.length <= rules.maxLength && isValid;
+    }
+    if (rules.isEmail) {
+      const pattern =
+        /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+      isValid = pattern.test(value) && isValid;
+    }
+
+    if (rules.isNumeric) {
+      const pattern = /^\d+$/;
+      isValid = pattern.test(value) && isValid;
     }
     return isValid;
-  }
-
+  };
   const onChangeHandler = (e, id) => {
-    // console.log("e.target.value", e.target.value);
-    // console.log("id", id);
     const updForm = { ...contactData.orderForm };
     const updElement = { ...updForm[id] };
     updElement.value = e.target.value;
-    updElement.valid=validationHandler(updElement.value,updElement.validation)
-    updElement.focused=true
-    updForm[id] = updElement; 
-    let formIsValid=true;
-    for(let id in updForm){
-      formIsValid=updForm[id].valid&&formIsValid
+    updElement.valid = validationHandler(
+      updElement.value,
+      updElement.validation
+    );
+    updElement.focused = true;
+    updForm[id] = updElement;
+    let formIsValid = true;
+    for (let id in updForm) {
+      formIsValid = updForm[id].valid && formIsValid;
     }
-    console.log('formIsValid', formIsValid)
-    console.log('updElement', updElement)
-    setContactData({ orderForm: updForm,formIsValid:formIsValid });
+    setContactData({ orderForm: updForm, formIsValid: formIsValid });
   };
-
-
 
   const formInputData = [];
   for (let key in contactData.orderForm) {
@@ -166,7 +170,6 @@ const ContactData = ({ingredients,price}) => {
       config: contactData.orderForm[key],
     });
   }
-
 
   let form = (
     <form onSubmit={orderHandler}>
@@ -182,24 +185,43 @@ const ContactData = ({ingredients,price}) => {
           onChange={(e) => onChangeHandler(e, formEl.id)}
         />
       ))}
-      <Button btnType={"Success"} disabled={!contactData.formIsValid}>ORDER</Button>
+      <Button btnType={"Success"} disabled={!contactData.formIsValid}>
+        ORDER
+      </Button>
     </form>
   );
-  if (contactData.loading) {
+  let errorMessage = null;
+  if (error) {
+    <WithErrorHandler error={error} />;
+  }
+
+  if (loading) {
     form = <Spinner />;
   }
 
   return (
-    <div className={style.ContactData}>
-      <h4>Enter Your Contact Data</h4>
-      {form}
-    </div>
+    <>
+      <div className={style.ContactData}>
+        <h4>Enter Your Contact Data</h4>
+        {form}
+        {errorMessage}
+      </div>
+    </>
   );
 };
 const mapStateToProps = (state) => {
   return {
-    ingredients: state.ingredients,
-    price: state.totalPrice,
+    ingredients: state.burgerBuilder.ingredients,
+    price: state.burgerBuilder.totalPrice,
+    loading: state.order.loading,
+    error: state.order.error,
+    token: state.order.token,
   };
 };
-export default connect(mapStateToProps)( ContactData);
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onBurgerPurchase: (orderData, token) =>
+      dispatch(actions.purchaseBurger(orderData, token)),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(ContactData);

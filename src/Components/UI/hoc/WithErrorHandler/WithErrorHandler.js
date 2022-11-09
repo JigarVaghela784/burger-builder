@@ -1,13 +1,22 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "../../Modal/Modal";
 // import axios from "axios";
-function WithErrorHandler({error,errorHandler}) {
-  
+function WithErrorHandler({ error }) {
+  const [isError, setIsError] = useState(null);
+  useEffect(() => {
+    if (error) {
+      setIsError(error);
+    }
+  }, [error]);
+
+
+  const errorHandler = () => {
+        setIsError(null)
+  };
   return (
     <>
-      <Modal show={error.error} modalClosed={errorHandler}>
-        {/* {console.log("error", error)} */}
-        {error.error ? error?.error?.message : null}
+      <Modal show={isError} modalClosed={errorHandler}>
+        {error ? error.message : null}
       </Modal>
     </>
   );

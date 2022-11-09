@@ -3,7 +3,8 @@ import style from './Toolbar.module.css'
 import Logo from '../Logo/Logo'
 import NavigationItems from './NavigationItems/NavigationItems'
 import DrawerToggle from './SideDrawer/DrawerToggle/DrawerToggle'
-export default function Toolbar({drawerToggleBtn}) {
+export default function Toolbar({drawerToggleBtn,isAuth}) {
+
   return (
     <header className={style.Toolbar}>
         {/* <Logo/>
@@ -16,7 +17,7 @@ export default function Toolbar({drawerToggleBtn}) {
           <Logo/>
           </div>
             <nav className={style.DesktopOnly}>
-                <NavigationItems/>
+                <NavigationItems isAuth={isAuth}/>
             </nav>
     </header>
   )

@@ -9,6 +9,7 @@ export default function BuildControls({
   price,
   purchasable,
   Ordered,
+  isAuth
 }) {
   const Control = [
     { label: "Cheese", type: "cheese" },
@@ -39,7 +40,7 @@ export default function BuildControls({
         className={style.OrderButton}
         onClick={Ordered}
       >
-        Order Now
+       {isAuth?"Order Now":"Sign In To Order"}
       </button>
     </div>
   );
