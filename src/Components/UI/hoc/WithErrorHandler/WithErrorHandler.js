@@ -11,11 +11,8 @@ function WithErrorHandler({ error }) {
 
 
   const errorHandler = () => {
-    // return error;
-    setIsError(null)
+        setIsError(null)
   };
-  console.log("isError", isError);
-  console.log("error!!!!", error);
   return (
     <>
       <Modal show={isError} modalClosed={errorHandler}>

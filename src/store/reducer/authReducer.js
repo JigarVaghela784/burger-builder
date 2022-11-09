@@ -6,6 +6,7 @@ const initialState = {
   userId: null,
   error: null,
   loading: false,
+  authNavigateToPath:'/'
 };
 
 const authStart = (state, action) => {
@@ -13,10 +14,10 @@ const authStart = (state, action) => {
 };
 
 const authSuccess = (state, action) => {
+console.log('action.token', action.token)
   return updatedObject(state, {
     token: action.token,
     userId: action.userId,
-    error: null,
     loading: false,
   });
 };
@@ -28,6 +29,10 @@ const authFail = (state, action) => {
 const authLogout=(state,action)=>{
     return updatedObject(state,{token:null,userId:null})
 }
+
+const setAuthNavigateToPath=(state,action)=>{
+  return updatedObject(state,{authNavigateToPath:action.path})
+}
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.AUTH_START:
@@ -38,6 +43,8 @@ const reducer = (state = initialState, action) => {
       return authFail(state, action);
     case actionTypes.AUTH_LOGOUT:
         return authLogout(state,action)
+    case actionTypes.SET_AUTH_NAVIGATE_PATH:
+        return setAuthNavigateToPath(state,action)
     default:
       return state;
   }

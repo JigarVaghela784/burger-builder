@@ -26,23 +26,19 @@ export const purchaseBurgerStart = () => {
     type: actionTypes.PURCHASE_BURGER_SUCCESS,
   };
 };
-export const purchaseBurger = (orderData) => {
+export const purchaseBurger = (orderData,token) => {
   return (dispatch) => {
     dispatch(purchaseBurgerStart());
     axios
-      .post("/orders.json", orderData)
+      .post("/orders.json?auth="+token, orderData)
       .then((response) => {
         if (response.status === 200) {
           console.log("response", response);
           dispatch(purchaseBurgerSuccess(response.data.name, orderData));
         }
-        // setContactData({ loading: false });
-        // navigate("/");
       })
       .catch((error) => {
         dispatch(purchaseBurgerFail(error));
-        console.log("error!!!", error);
-        // setContactData({ loading: false });
       });
   };
 };
@@ -64,24 +60,19 @@ export const orderFetchStart = () => {
     type: actionTypes.ORDER_FETCH_START,
   };
 };
-export const orderFetch = ( ) => {
+export const orderFetch = (token) => {
   return (dispatch) => {
     dispatch(orderFetchStart());
-    axios
-      .get("/orders.json")
+    axios.get("/orders.json?auth="+token)
       .then((res) => {
         const fetchOrderData = [];
         for (let key in res.data) {
           fetchOrderData.push({ ...res.data[key], id: key });
         }
         dispatch(orderFetchSuccess(fetchOrderData));
-        // console.log("res", res.data);
-        // setOrderData({ loading: false,orders:fetchOrderData });
       })
       .catch((error) => {
-        dispatch(orderFetchFail(error));
-        // setOrderData({ loading: false });
-        // setError({ error: error });
+        dispatch(orderFetchFail(error));  
       });
   };
 };

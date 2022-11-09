@@ -21,7 +21,6 @@ const Checkout = ({ ings, purchased }) => {
   //   }
   //   setIngredient({ ingredients: ingredients,price });
   // }, [location.search]);
-  console.log("location:", location);
   const checkoutCancelledHandler = () => {
     navigate("/");
   };
@@ -31,10 +30,8 @@ const Checkout = ({ ings, purchased }) => {
       ////WithError handler reaming to add 
 
   let summary = <Navigate to="/" />;
-  console.log('purchased', purchased)
   if (ings) {
     const purchasedInit = purchased ? <Navigate to="/" /> : null;
-    console.log("ings", ings);
     summary = (
       <>
         {purchasedInit}

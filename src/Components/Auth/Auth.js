@@ -1,12 +1,21 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Input from "../Form/Input";
 import Button from "../UI/Button/Button";
 import style from "./Auth.module.css";
 import Spinner from "../UI/Spinner/Spinner";
 import * as actions from "../../store/action/index";
 import { connect } from "react-redux";
+import { Navigate } from "react-router-dom";
 
-const Auth = ({ onAuth,loading,error }) => {
+const Auth = ({
+  onAuth,
+  loading,
+  isAuthenticated,
+  error,
+  setAuthNavigateToPath,
+  buildingBurger,
+  onSetAuthNavigatePath,
+}) => {
   const [auth, setAuth] = useState({
     authForm: {
       email: {
@@ -40,6 +49,13 @@ const Auth = ({ onAuth,loading,error }) => {
     },
     isSignup: true,
   });
+
+  useEffect(() => {
+    if(!buildingBurger&&setAuthNavigateToPath!=='/'){
+      onSetAuthNavigatePath()
+    }
+  }, []);
+
   const validationHandler = (value, rules) => {
     let isValid = true;
     if (!rules) {
@@ -66,7 +82,6 @@ const Auth = ({ onAuth,loading,error }) => {
     }
     return isValid;
   };
-  console.log('loading', loading)
 
   const onChangeHandler = (e, id) => {
     const updAuthForm = {
@@ -78,7 +93,7 @@ const Auth = ({ onAuth,loading,error }) => {
         focused: true,
       },
     };
-    setAuth({...auth, authForm: updAuthForm });
+    setAuth({ ...auth, authForm: updAuthForm });
   };
 
   const formInputData = [];
@@ -91,17 +106,21 @@ const Auth = ({ onAuth,loading,error }) => {
 
   const submitFormHandler = (event) => {
     event.preventDefault();
-    onAuth(auth.authForm.email.value, auth.authForm.password.value,auth.isSignup);
+    onAuth(
+      auth.authForm.email.value,
+      auth.authForm.password.value,
+      auth.isSignup
+    );
   };
 
   const switchAuthModeHandler = () => {
-    setAuth(prev=>{
-        return{authForm:prev.authForm,isSignup:!prev.isSignup}
+    // console.log('first')
+    setAuth((prev) => {
+      return { authForm: prev.authForm, isSignup: !prev.isSignup };
     });
   };
 
   let form = formInputData.map((formEl) => (
-    // console.log('formEl', formEl),
     <Input
       key={formEl.id}
       elementType={formEl.config.elementType}
@@ -113,39 +132,47 @@ const Auth = ({ onAuth,loading,error }) => {
       onChange={(e) => onChangeHandler(e, formEl.id)}
     />
   ));
-  if(loading){
-    form=<Spinner/>
+  if (loading) {
+    form = <Spinner />;
+  }
+  let authNavigate = null;
+  if (isAuthenticated) {
+    authNavigate = <Navigate to={setAuthNavigateToPath} />;
   }
 
-  let errorMessage=null
-  if(error){
-    errorMessage=(
-        <p>{error.message}</p>
-    )
+  let errorMessage = null;
+  if (error) {
+    errorMessage = <p>{error.message}</p>;
   }
 
   return (
     <div className={style.Auth}>
-        {errorMessage}
+      {errorMessage}
+      {authNavigate}
       <form onSubmit={submitFormHandler}>
         {form}
         <Button btnType={"Success"}>SUBMIT</Button>
-        <Button clicked={switchAuthModeHandler} btnType={"Danger"}>
-          Switch To {auth.isSignup ? "Sign In" : "Sign Up"}
-        </Button>
       </form>
+      <Button clicked={switchAuthModeHandler} btnType={"Danger"}>
+        Switch To {auth.isSignup ? "Sign In" : "Sign Up"}
+      </Button>
     </div>
   );
 };
-const mapStateToProps=state=>{
-    return{
-        loading:state.auth.loading,
-        error:state.auth.error
-    }
-}
+const mapStateToProps = (state) => {
+  return {
+    loading: state.auth.loading,
+    error: state.auth.error,
+    isAuthenticated: state.auth.token !== null,
+    buildingBurger: state.burgerBuilder.building,
+    setAuthNavigateToPath: state.auth.authNavigateToPath,
+  };
+};
 const mapDispatchToProps = (dispatch) => {
   return {
-    onAuth: (email, password,isSignup) => dispatch(actions.auth(email, password,isSignup)),
+    onAuth: (email, password, isSignup) =>
+      dispatch(actions.auth(email, password, isSignup)),
+    onSetAuthNavigatePath: () => dispatch(actions.setAuthNavigateToPath("/")),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Auth);

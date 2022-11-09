@@ -5,6 +5,7 @@ const initialState = {
   loading: false,
   purchased: false,
   error: null,
+
 };
 
 const purchaseInit = (state, action) => {
@@ -25,6 +26,7 @@ const purchaseBurgerSuccess = (state, action) => {
   });
 };
 const purchaseBurgerFail = (state, action) => {
+  console.log('action.error purchase', action.error)
   return updatedObject(state, { loading: false, error: action.error });
 };
 const orderFetchStart = (state, action) => {
@@ -37,8 +39,11 @@ const orderFetchSuccess = (state, action) => {
   });
 };
 const orderFetchFail = (state, action) => {
+  console.log('action.error fetch', action.error)
   return updatedObject(state, { loading: false, error: action.error });
 };
+
+
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {

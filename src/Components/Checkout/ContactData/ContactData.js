@@ -7,12 +7,14 @@ import style from "./ContactData.module.css";
 import Input from "../../Form/Input";
 import { connect } from "react-redux";
 import * as actions from "../../../store/action/index";
+import WithErrorHandler from "../../UI/hoc/WithErrorHandler/WithErrorHandler";
 const ContactData = ({
   ingredients,
   price,
   onBurgerPurchase,
   loading,
   error,
+  token,
 }) => {
   const [contactData, setContactData] = useState({
     orderForm: {
@@ -38,7 +40,7 @@ const ContactData = ({
         value: "",
         validation: {
           require: true,
-          isEmail:true
+          isEmail: true,
         },
         valid: false,
         focused: false,
@@ -67,7 +69,7 @@ const ContactData = ({
           require: true,
           minLength: 6,
           maxLength: 6,
-          isNumeric:true
+          isNumeric: true,
         },
         valid: false,
         focused: false,
@@ -116,8 +118,7 @@ const ContactData = ({
       price: price,
       orderData: formData,
     };
-    onBurgerPurchase(order);
-    ////WithError handler reaming to add
+    onBurgerPurchase(order, token);
   };
   const validationHandler = (value, rules) => {
     let isValid = true;
@@ -134,19 +135,18 @@ const ContactData = ({
       isValid = value.length <= rules.maxLength && isValid;
     }
     if (rules.isEmail) {
-      const pattern = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-      isValid = pattern.test(value) && isValid
-  }
+      const pattern =
+        /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
+      isValid = pattern.test(value) && isValid;
+    }
 
-  if (rules.isNumeric) {
+    if (rules.isNumeric) {
       const pattern = /^\d+$/;
-      isValid = pattern.test(value) && isValid
-  }
+      isValid = pattern.test(value) && isValid;
+    }
     return isValid;
   };
   const onChangeHandler = (e, id) => {
-    // console.log("e.target.value", e.target.value);
-    // console.log("id", id);
     const updForm = { ...contactData.orderForm };
     const updElement = { ...updForm[id] };
     updElement.value = e.target.value;
@@ -160,8 +160,6 @@ const ContactData = ({
     for (let id in updForm) {
       formIsValid = updForm[id].valid && formIsValid;
     }
-    console.log("formIsValid", formIsValid);
-    console.log("updElement", updElement);
     setContactData({ orderForm: updForm, formIsValid: formIsValid });
   };
 
@@ -192,15 +190,23 @@ const ContactData = ({
       </Button>
     </form>
   );
+  let errorMessage = null;
+  if (error) {
+    <WithErrorHandler error={error} />;
+  }
+
   if (loading) {
     form = <Spinner />;
   }
 
   return (
-    <div className={style.ContactData}>
-      <h4>Enter Your Contact Data</h4>
-      {form}
-    </div>
+    <>
+      <div className={style.ContactData}>
+        <h4>Enter Your Contact Data</h4>
+        {form}
+        {errorMessage}
+      </div>
+    </>
   );
 };
 const mapStateToProps = (state) => {
@@ -209,12 +215,13 @@ const mapStateToProps = (state) => {
     price: state.burgerBuilder.totalPrice,
     loading: state.order.loading,
     error: state.order.error,
+    token: state.order.token,
   };
 };
 const mapDispatchToProps = (dispatch) => {
   return {
-    onBurgerPurchase: (orderData) =>
-      dispatch(actions.purchaseBurger(orderData)),
+    onBurgerPurchase: (orderData, token) =>
+      dispatch(actions.purchaseBurger(orderData, token)),
   };
 };
 export default connect(mapStateToProps, mapDispatchToProps)(ContactData);

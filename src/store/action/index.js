@@ -11,5 +11,8 @@ export {
  } from "./orderAction";
 
  export {
-    auth
+    auth,
+    authLogout,
+    setAuthNavigateToPath,
+    authCheckState
  } from './authAction'
