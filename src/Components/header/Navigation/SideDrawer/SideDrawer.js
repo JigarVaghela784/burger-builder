@@ -12,7 +12,7 @@ export default function SideDrawer({opened,closed,isAuth}) {
   return (
     <>
       <BackDrop show={opened} clicked={closed}/>
-      <div className={attachedStyle.join(' ')}>
+      <div className={attachedStyle.join(' ')} onClick={closed}>
         <div className={style.Logo}>
           <Logo />
         </div>

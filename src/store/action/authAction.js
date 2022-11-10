@@ -51,16 +51,14 @@ export const auth = (email, password, isSignup) => {
       url =
         "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyA-eh1id1YzRG6c8MSABR_XUn2l0lauqRA";
     }
-    console.log("isSignup", isSignup);
     axios
       .post(url, authData)
       .then((response) => {
-        // console.log('response', response.data.expiresIn)
         let expirationDate = new Date(
           new Date().getTime() + response.data.expiresIn * 1000
         );
-        localStorage.setItem("token", JSON.stringify(response.data.idToken));
-        localStorage.setItem("userId", JSON.stringify(response.data.localId));
+        localStorage.setItem("token", response.data.idToken);
+        localStorage.setItem("userId",response.data.localId);
         localStorage.setItem("expirationDate", expirationDate);
         dispatch(authSuccess(response.data.idToken, response.data.localId));
         dispatch(checkAuthTimeout(response.data.expiresIn));
@@ -82,9 +80,6 @@ export const setAuthNavigateToPath = (path) => {
 export const authCheckState = () => {
   return (dispatch) => {
     const token = localStorage.getItem("token");
-    // console.log('token', token)
-    // console.log('userId', userId)
-    // console.log('expirationDate', expirationDate)
     if (!token) {
       dispatch(authLogout());
     } else {
@@ -92,9 +87,13 @@ export const authCheckState = () => {
       if (expirationDate < new Date()) {
         dispatch(authLogout());
       } else {
-        const userId = localStorage.getItem("userId");
+        const userId =localStorage.getItem("userId");
         dispatch(authSuccess(token, userId));
-        dispatch(checkAuthTimeout((expirationDate.getTime()-new Date().getTime())/1000))
+        dispatch(
+          checkAuthTimeout(
+            (expirationDate.getTime() - new Date().getTime()) / 1000
+          )
+        );
       }
     }
   };

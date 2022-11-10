@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Input from "../Form/Input";
 import Button from "../UI/Button/Button";
 import style from "./Auth.module.css";
@@ -6,6 +6,8 @@ import Spinner from "../UI/Spinner/Spinner";
 import * as actions from "../../store/action/index";
 import { connect } from "react-redux";
 import { Navigate } from "react-router-dom";
+import { updatedObject } from "../../Shared/utility";
+import { validationHandler } from "../../Shared/validation";
 
 const Auth = ({
   onAuth,
@@ -49,50 +51,22 @@ const Auth = ({
     },
     isSignup: true,
   });
-
-  useEffect(() => {
-    if(!buildingBurger&&setAuthNavigateToPath!=='/'){
-      onSetAuthNavigatePath()
+    useEffect(() => {
+    if (!buildingBurger && setAuthNavigateToPath !== "/") {
+      onSetAuthNavigatePath();
     }
   }, []);
 
-  const validationHandler = (value, rules) => {
-    let isValid = true;
-    if (!rules) {
-      return true;
-    }
-    if (rules.require) {
-      isValid = value.trim() !== "" && isValid;
-    }
-    if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid;
-    }
-    if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid;
-    }
-    if (rules.isEmail) {
-      const pattern =
-        /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-      isValid = pattern.test(value) && isValid;
-    }
-
-    if (rules.isNumeric) {
-      const pattern = /^\d+$/;
-      isValid = pattern.test(value) && isValid;
-    }
-    return isValid;
-  };
+  
 
   const onChangeHandler = (e, id) => {
-    const updAuthForm = {
-      ...auth.authForm,
-      [id]: {
-        ...auth.authForm[id],
+    const updAuthForm =updatedObject(auth.authForm, {
+      [id]: updatedObject(auth.authForm[id], {
         value: e.target.value,
         valid: validationHandler(e.target.value, auth.authForm[id].validation),
         focused: true,
-      },
-    };
+      }),
+    });
     setAuth({ ...auth, authForm: updAuthForm });
   };
 
@@ -114,7 +88,6 @@ const Auth = ({
   };
 
   const switchAuthModeHandler = () => {
-    // console.log('first')
     setAuth((prev) => {
       return { authForm: prev.authForm, isSignup: !prev.isSignup };
     });

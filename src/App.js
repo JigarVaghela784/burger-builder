@@ -15,20 +15,33 @@ import { connect } from "react-redux";
 function App({ onAuthCheck, isAuthenticated }) {
   useEffect(() => {
     onAuthCheck();
-  }, []);
+  }, [onAuthCheck]);
 
+  let routes = (
+    <Routes>
+      <Route path="auth" element={<Auth />} />
+      <Route path="/" element={<BurgerBuilder />} />
+      <Route path="*" element={<Navigate to="/"/>}/>
+    </Routes>
+  );
+  if (isAuthenticated) {
+     routes = (
+      <Routes>
+        <Route path="/checkout" element={<Checkout />}>
+          <Route path="contact-data" element={<ContactData />} />
+        </Route>
+        <Route path="orders" element={<Orders />} />
+        <Route path="auth" element={<Auth />} />
+        <Route path="logout" element={<Logout />} />
+        <Route path="/" element={<BurgerBuilder />} />
+        <Route path="*" element={<Navigate to='/' />} />
+      </Routes>
+    );
+  }
   return (
     <>
       <Layout>
-        <Routes>
-          <Route path="/checkout" element={<Checkout />}>
-            <Route path="contact-data" element={<ContactData />} />
-          </Route>
-          <Route path="orders" element={<Orders />} />
-          <Route path="auth" element={<Auth />} />
-          <Route path="logout" element={<Logout />} />
-          <Route path="/" element={<BurgerBuilder />} />
-        </Routes>
+        {routes}
       </Layout>
     </>
   );
