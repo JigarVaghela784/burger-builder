@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import Order from "../Order/Order";
-import axios from "../../axios-Order";
 import WithErrorHandler from "../UI/hoc/WithErrorHandler/WithErrorHandler";
 import Spinner from "../UI/Spinner/Spinner";
 import * as actions from "../../store/action/index";

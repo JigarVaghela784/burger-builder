@@ -5,9 +5,8 @@ import Modal from "../UI/Modal/Modal";
 import OrderSummary from "../Burger/OrderSummery/OrderSummary";
 import WithErrorHandler from "../UI/hoc/WithErrorHandler/WithErrorHandler";
 import Spinner from "../UI/Spinner/Spinner";
-import axios from "../../axios-Order";
 import { useNavigate } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import * as actions from "../../store/action/index";
 
 function BurgerBuilder({
@@ -19,33 +18,25 @@ function BurgerBuilder({
   onInitIngredient,
   onPurchaseInit,
   isAuthenticated,
-  onSetAuthNavigatePath
+  onSetAuthNavigatePath,
 }) {
   const [ingredient, setIngredient] = useState({
     purchasable: false,
     purchasing: false,
     loading: false,
-    // error: false,
   });
-  const navigate = useNavigate();
 
-  // const [errors, setErrors] = useState({ errors: null });
-  // useEffect(() => {
-  //   const reqInterceptors = axios.interceptors.request.use((req) => {
-  //     setErrors({ errors: null });
-  //     return req;
-  //   });
-  //   const resInterceptors = axios.interceptors.response.use(
-  //     (response) => response,
-  //     (error) => {
-  //       setErrors({ errors: error });
-  //     }
-  //   );
-  //   return () => {
-  //     axios.interceptors.request.eject(reqInterceptors);
-  //     axios.interceptors.request.eject(resInterceptors);
-  //   };
-  // }, []);
+  const navigate = useNavigate();
+  // const dispatch = useDispatch();
+
+  // const onAddIngredient = (ingsName) =>
+  //   dispatch(actions.addIngredients(ingsName));
+  // const onRemoveIngredient = (ingsName) =>
+  //   dispatch(actions.removeIngredients(ingsName));
+  // const onInitIngredient = () => dispatch(actions.initIngredient());
+  // const onPurchaseInit = () => dispatch(actions.purchaseInit());
+  // const onSetAuthNavigatePath = (path) =>
+  //   dispatch(actions.setAuthNavigateToPath(path));
 
   useEffect(() => {
     onInitIngredient();
@@ -69,7 +60,7 @@ function BurgerBuilder({
         purchasing: true,
       });
     } else {
-      onSetAuthNavigatePath("/checkout")
+      onSetAuthNavigatePath("/checkout");
       navigate("/auth");
     }
   };
@@ -119,14 +110,7 @@ function BurgerBuilder({
       />
     );
   }
-  // if (ingredient.loading) {
-  //   orderSummary = <Spinner />;
-  // }
 
-  // const errorHandler = () => {
-  //     // setErrors({error:null})
-  //     return error
-  // };
   return (
     <>
       <Modal show={ingredient.purchasing} modalClosed={purchaseCancelHandler}>
@@ -134,9 +118,6 @@ function BurgerBuilder({
       </Modal>
       {burger}
       <WithErrorHandler error={error} />
-      {/* <Modal show={error.error} modalClosed={errorHandler}>
-          {error.error ? error?.error?.message : null}
-        </Modal> */}
     </>
   );
 }
@@ -154,7 +135,7 @@ const mapDispatchToProps = (dispatch) => {
     onRemoveIngredient: (ingsName) =>
       dispatch(actions.removeIngredients(ingsName)),
     onInitIngredient: () => dispatch(actions.initIngredient()),
-    onPurchaseInit: () => dispatch(actions.purchaseInit()), 
+    onPurchaseInit: () => dispatch(actions.purchaseInit()),
     onSetAuthNavigatePath: (path) =>
       dispatch(actions.setAuthNavigateToPath(path)),
   };

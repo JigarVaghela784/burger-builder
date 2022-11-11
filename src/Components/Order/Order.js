@@ -1,8 +1,6 @@
 import React from "react";
 import style from "./Order.module.css";
 const Order = ({ price, ingredient }) => {
-  console.log("price", price);
-  console.log("ingredient", ingredient);
   const ingredients = [];
   for (let igName in ingredient) {
     ingredients.push({ name: igName, amount: ingredient[igName] });

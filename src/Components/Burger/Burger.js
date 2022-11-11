@@ -10,7 +10,6 @@ function Burger( { ingredients },props,) {
         return <BurgerIngredients key={igKey + i} type={igKey} />;
       });
     })
-    // console.log(transformIngredient)
     .reduce((arr, el) => {
       return arr.concat(el);
     }, []);

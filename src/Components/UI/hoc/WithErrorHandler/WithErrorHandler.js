@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../../Modal/Modal";
-// import axios from "axios";
 function WithErrorHandler({ error }) {
   const [isError, setIsError] = useState(null);
   useEffect(() => {

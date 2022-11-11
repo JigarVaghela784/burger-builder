@@ -51,16 +51,14 @@ const Auth = ({
     },
     isSignup: true,
   });
-    useEffect(() => {
+  useEffect(() => {
     if (!buildingBurger && setAuthNavigateToPath !== "/") {
       onSetAuthNavigatePath();
     }
-  }, []);
-
-  
+  },[buildingBurger,setAuthNavigateToPath,onSetAuthNavigatePath]);
 
   const onChangeHandler = (e, id) => {
-    const updAuthForm =updatedObject(auth.authForm, {
+    const updAuthForm = updatedObject(auth.authForm, {
       [id]: updatedObject(auth.authForm[id], {
         value: e.target.value,
         valid: validationHandler(e.target.value, auth.authForm[id].validation),

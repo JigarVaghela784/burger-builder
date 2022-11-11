@@ -1,4 +1,4 @@
-import React,{useEffect} from "react";
+import React from "react";
 import Button from "../../UI/Button/Button";
 export default function OrderSummary({
   ingredients,
@@ -15,9 +15,6 @@ export default function OrderSummary({
       
     );
   });
-  useEffect(() => {
-    // console.log("[Order Summary] Update")
-  }, [ingredientSummary]);
 
   return (
     <div>

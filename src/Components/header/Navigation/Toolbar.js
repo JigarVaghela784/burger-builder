@@ -7,11 +7,6 @@ export default function Toolbar({drawerToggleBtn,isAuth}) {
 
   return (
     <header className={style.Toolbar}>
-        {/* <Logo/>
-        <nav>
-            <NavigationItems/>
-        </nav>
-        <div>Menu</div> */}
           <DrawerToggle Clicked={drawerToggleBtn}/>
           <div className={style.Logo}>
           <Logo/>

@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import Button from "../../UI/Button/Button";
-import { useNavigate } from "react-router-dom";
 import Spinner from "../../UI/Spinner/Spinner";
-import axios from "../../../axios-Order";
 import style from "./ContactData.module.css";
 import Input from "../../Form/Input";
 import { connect } from "react-redux";
@@ -105,7 +103,6 @@ const ContactData = ({
     },
     formIsValid: false,
   });
-  console.log("userId", userId);
   const orderHandler = (event) => {
     event.preventDefault();
     const formData = {};
@@ -119,8 +116,8 @@ const ContactData = ({
       userId: userId,
     };
     onBurgerPurchase(order, token);
+    console.log('token11', order)
   };
- 
   const onChangeHandler = (e, id) => {
     const updElement = updatedObject(contactData.orderForm[id], {
       value: e.target.value,

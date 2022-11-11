@@ -12,7 +12,8 @@ import orderReducer from "./store/reducer/orderReducer";
 import authReducer from "./store/reducer/authReducer"
 import thunk from "redux-thunk";
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const composeEnhancers =process.env.NODE_ENV==='development'? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__:null || compose;
+let newLogger=process.env.NODE_ENV==='development'?logger :null 
 const rootReducer = combineReducers({
   burgerBuilder: burgerBuilderReducer,
   order: orderReducer,
@@ -20,17 +21,15 @@ const rootReducer = combineReducers({
 });
 const store = createStore(
   rootReducer,
-  composeEnhancers(applyMiddleware(thunk, logger))
+  composeEnhancers(applyMiddleware(thunk,newLogger))
 );
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  // <React.StrictMode>
   <Provider store={store}>
-    <BrowserRouter>
+    <BrowserRouter basename="BurgerBuilder">
       <App />
     </BrowserRouter>
   </Provider>
-  // </React.StrictMode>
 );
 
 reportWebVitals();
