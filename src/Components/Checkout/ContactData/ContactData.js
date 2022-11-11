@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import Button from "../../UI/Button/Button";
-import { useNavigate } from "react-router-dom";
 import Spinner from "../../UI/Spinner/Spinner";
-import axios from "../../../axios-Order";
 import style from "./ContactData.module.css";
 import Input from "../../Form/Input";
 import { connect } from "react-redux";
 import * as actions from "../../../store/action/index";
 import WithErrorHandler from "../../UI/hoc/WithErrorHandler/WithErrorHandler";
+import { updatedObject } from "../../../Shared/utility";
+import { validationHandler } from "../../../Shared/validation";
 const ContactData = ({
   ingredients,
   price,
@@ -15,6 +15,7 @@ const ContactData = ({
   loading,
   error,
   token,
+  userId,
 }) => {
   const [contactData, setContactData] = useState({
     orderForm: {
@@ -101,14 +102,9 @@ const ContactData = ({
       },
     },
     formIsValid: false,
-    // loading: false,
   });
-  const navigate = useNavigate();
-
   const orderHandler = (event) => {
     event.preventDefault();
-    // const ingredients = {};
-    // const price = 0;
     const formData = {};
     for (let id in contactData.orderForm) {
       formData[id] = contactData.orderForm[id].value;
@@ -117,45 +113,20 @@ const ContactData = ({
       ingredient: ingredients,
       price: price,
       orderData: formData,
+      userId: userId,
     };
     onBurgerPurchase(order, token);
-  };
-  const validationHandler = (value, rules) => {
-    let isValid = true;
-    if (!rules) {
-      return true;
-    }
-    if (rules.require) {
-      isValid = value.trim() !== "" && isValid;
-    }
-    if (rules.minLength) {
-      isValid = value.length >= rules.minLength && isValid;
-    }
-    if (rules.maxLength) {
-      isValid = value.length <= rules.maxLength && isValid;
-    }
-    if (rules.isEmail) {
-      const pattern =
-        /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-      isValid = pattern.test(value) && isValid;
-    }
-
-    if (rules.isNumeric) {
-      const pattern = /^\d+$/;
-      isValid = pattern.test(value) && isValid;
-    }
-    return isValid;
+    console.log('token11', order)
   };
   const onChangeHandler = (e, id) => {
-    const updForm = { ...contactData.orderForm };
-    const updElement = { ...updForm[id] };
-    updElement.value = e.target.value;
-    updElement.valid = validationHandler(
-      updElement.value,
-      updElement.validation
-    );
-    updElement.focused = true;
-    updForm[id] = updElement;
+    const updElement = updatedObject(contactData.orderForm[id], {
+      value: e.target.value,
+      valid: validationHandler(e.target.value, contactData.orderForm[id].validation),
+      focused: true,
+    });
+    const updForm=updatedObject(contactData.orderForm,{
+      [id] : updElement
+    })
     let formIsValid = true;
     for (let id in updForm) {
       formIsValid = updForm[id].valid && formIsValid;
@@ -192,7 +163,7 @@ const ContactData = ({
   );
   let errorMessage = null;
   if (error) {
-    <WithErrorHandler error={error} />;
+    errorMessage = <WithErrorHandler error={error} />;
   }
 
   if (loading) {
@@ -214,8 +185,9 @@ const mapStateToProps = (state) => {
     ingredients: state.burgerBuilder.ingredients,
     price: state.burgerBuilder.totalPrice,
     loading: state.order.loading,
-    error: state.order.error,
-    token: state.order.token,
+    error: state.order.purchaseError,
+    token: state.auth.token,
+    userId: state.auth.userId,
   };
 };
 const mapDispatchToProps = (dispatch) => {

@@ -1,6 +1,5 @@
 import React from "react";
 import style from "./BuildControl.module.css";
-// import { Button } from 'antd';
 export default function BuildControl({ label, added, removed,disabled}) {
   return (
     <div className={style.BuildControl}>

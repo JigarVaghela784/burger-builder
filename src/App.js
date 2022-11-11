@@ -1,13 +1,9 @@
-import React, { useEffect } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import "./App.css";
-// import RouteList from "./RouteList";
 import Layout from "./Components/Layout/Layout";
 import BurgerBuilder from "./Components/BurgerBuilder/BurgerBuilder";
-import Checkout from "./Components/Checkout/Checkout";
 import { Navigate, Route, Routes } from "react-router-dom";
 import ContactData from "./Components/Checkout/ContactData/ContactData";
-import Orders from "./Components/Orders/Orders";
-import Auth from "./Components/Auth/Auth";
 import Logout from "./Components/Auth/Logout/Logout";
 import * as actions from "./store/action/index";
 import { connect } from "react-redux";
@@ -15,21 +11,64 @@ import { connect } from "react-redux";
 function App({ onAuthCheck, isAuthenticated }) {
   useEffect(() => {
     onAuthCheck();
-  }, []);
+  }, [onAuthCheck]);
 
+  const LazyCheckout = lazy(() => import("./Components/Checkout/Checkout"));
+  const LazyOrders = lazy(() => import("./Components/Orders/Orders"));
+  const LazyAuth = lazy(() => import("./Components/Auth/Auth"));
+
+  let routes = (
+    <Routes>
+      <Route
+        path="auth"
+        element={
+          <Suspense fallback="Loading...">
+            <LazyAuth />
+          </Suspense>
+        }
+      />
+      <Route path="/" element={<BurgerBuilder />} />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  );
+  if (isAuthenticated) {
+    routes = (
+      <Routes>
+        <Route
+          path="/checkout"
+          element={
+            <Suspense fallback="Loading...">
+              <LazyCheckout />
+            </Suspense>
+          }
+        >
+          <Route path="contact-data" element={<ContactData />} />
+        </Route>
+        <Route
+          path="orders"
+          element={
+            <Suspense fallback="Loading...">
+              <LazyOrders />
+            </Suspense>
+          }
+        />
+        <Route
+          path="auth"
+          element={
+            <Suspense fallback="Loading...">
+              <LazyAuth />
+            </Suspense>
+          }
+        />
+        <Route path="logout" element={<Logout />} />
+        <Route path="/" element={<BurgerBuilder />} />
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    );
+  }
   return (
     <>
-      <Layout>
-        <Routes>
-          <Route path="/checkout" element={<Checkout />}>
-            <Route path="contact-data" element={<ContactData />} />
-          </Route>
-          <Route path="orders" element={<Orders />} />
-          <Route path="auth" element={<Auth />} />
-          <Route path="logout" element={<Logout />} />
-          <Route path="/" element={<BurgerBuilder />} />
-        </Routes>
-      </Layout>
+      <Layout>{routes}</Layout>
     </>
   );
 }

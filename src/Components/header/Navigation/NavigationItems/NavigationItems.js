@@ -1,10 +1,8 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
-// import NavigationItem from './NavigationItem/NavigationItem'
 import style from "./NavigationItems.module.css";
 export default function NavigationItems({ isAuth }) {
   const location = useLocation();
-  console.log("isAuth", isAuth);
   return (
     <ul className={style.NavigationItem}>
       <li className={style.NavigationItem}>

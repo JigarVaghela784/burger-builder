@@ -10,7 +10,7 @@ const Layout = ({children,isAuthenticated}) => {
   const sideDrawerCloseHandler = () => {
     setSideDrawer({ showSideDrawer: false });
   };
-  const sideDrawerToggleandler = () => {
+  const sideDrawerToggleHandler = () => {
     setSideDrawer({ showSideDrawer: !sideDrawer.showSideDrawer });
   };
   useEffect(() => {
@@ -22,7 +22,7 @@ const Layout = ({children,isAuthenticated}) => {
         closed={sideDrawerCloseHandler}
         opened={sideDrawer.showSideDrawer}
       />
-      <Toolbar isAuth={isAuthenticated} drawerToggleBtn={sideDrawerToggleandler} />
+      <Toolbar isAuth={isAuthenticated} drawerToggleBtn={sideDrawerToggleHandler} />
       <main className={classes.content}>{children}</main>
     </>
   );

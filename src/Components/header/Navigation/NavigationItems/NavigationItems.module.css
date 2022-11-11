@@ -28,6 +28,8 @@
     border-bottom: 4px solid transparent; */
     box-sizing: border-box;
     display: block;
+    padding: 5%;
+
 
 }
 .NavigationItem a:hover,

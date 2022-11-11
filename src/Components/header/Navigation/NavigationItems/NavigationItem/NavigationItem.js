@@ -7,7 +7,6 @@ export default function NavigationItem({ active, link, children }) {
       <NavLink  to={link} activeclassname={style.active}  >
         {children}
       </NavLink>
-      {/* <NavLink className={active?style.active:null} href={link}>{children}</NavLink> */}
     </li>
   );
 }

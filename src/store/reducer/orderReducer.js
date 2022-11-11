@@ -1,11 +1,11 @@
 import * as actionTypes from "../action/actionTypes";
-import { updatedObject } from "../utility";
+import { updatedObject } from "../../Shared/utility";
 const initialState = {
   order: [],
   loading: false,
   purchased: false,
-  error: null,
-
+  purchaseError: null,
+  orderError: null,
 };
 
 const purchaseInit = (state, action) => {
@@ -26,8 +26,10 @@ const purchaseBurgerSuccess = (state, action) => {
   });
 };
 const purchaseBurgerFail = (state, action) => {
-  console.log('action.error purchase', action.error)
-  return updatedObject(state, { loading: false, error: action.error });
+  return updatedObject(state, {
+    loading: false,
+    purchaseError: action.purchaseError,
+  });
 };
 const orderFetchStart = (state, action) => {
   return updatedObject(state, { loading: true });
@@ -39,11 +41,11 @@ const orderFetchSuccess = (state, action) => {
   });
 };
 const orderFetchFail = (state, action) => {
-  console.log('action.error fetch', action.error)
-  return updatedObject(state, { loading: false, error: action.error });
+  return updatedObject(state, {
+    loading: false,
+    orderError: action.orderError,
+  });
 };
-
-
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {

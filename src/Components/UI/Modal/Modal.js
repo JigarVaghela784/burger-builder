@@ -1,17 +1,12 @@
-// import React,{useEffect} from "react";
 import React from "react";
 import style from "./Modal.module.css";
-// import OrderSummary from "../../Burger/OrderSummery/OrderSummary";
 import BackDrop from "../BackDrop/BackDrop";
 export default function Modal({
   show,
   modalClosed,
   children
 }) {
-// Component Did Update
-  // useEffect(() => {
-  //   console.log("[Modal] Update")
-  // }, []);
+
   return (
     <>
       <BackDrop show={show} clicked={modalClosed} />
@@ -23,11 +18,6 @@ export default function Modal({
         }}
       >
         {children}
-        {/* <OrderSummary
-          ingredients={ingredients}
-          cancelPurchase={modalClosed}
-          continuePurchase={continuePurchase}
-        /> */}
       </div>
     </>
   );
