@@ -26,7 +26,7 @@ const Order = ({ price, ingredient }) => {
       <div className={style.Order}>
         <p>Ingredients:{ingredientOutput}</p>
         <p>
-          price <strong>{price}</strong>
+          price: Rs.<strong>{price}</strong>
         </p>
       </div>
     </>
