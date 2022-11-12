@@ -6,7 +6,7 @@ import OrderSummary from "../Burger/OrderSummery/OrderSummary";
 import WithErrorHandler from "../UI/hoc/WithErrorHandler/WithErrorHandler";
 import Spinner from "../UI/Spinner/Spinner";
 import { useNavigate } from "react-router-dom";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { connect} from "react-redux";
 import * as actions from "../../store/action/index";
 
 function BurgerBuilder({
